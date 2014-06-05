@@ -88,34 +88,34 @@ Each of the main targets for the modules will call clean themselves before proce
     <target name="check-playerglobal-home" unless="playerglobal.swc.exists"
         description="Check PLAYERGLOBAL_HOME for both a directory and a swc file">
 
-        <echo message="PLAYERGLOBAL_HOME is ${env.PLAYERGLOBAL_HOME}"/>
-        <echo message="playerglobal.version is ${playerglobal.version}"/>
+        <!--<echo message="PLAYERGLOBAL_HOME is ${env.PLAYERGLOBAL_HOME}"/>-->
+        <!--<echo message="playerglobal.version is ${playerglobal.version}"/>-->
 
-        <available file="${env.PLAYERGLOBAL_HOME}" 
-            type="dir" 
-            property="PLAYERGLOBAL_HOME.set"/>
+        <!--<available file="${env.PLAYERGLOBAL_HOME}" -->
+            <!--type="dir" -->
+            <!--property="PLAYERGLOBAL_HOME.set"/>-->
 
-        <fail message="The environment variable PLAYERGLOBAL_HOME is not set to a directory" 
-            unless="PLAYERGLOBAL_HOME.set"/>
+        <!--<fail message="The environment variable PLAYERGLOBAL_HOME is not set to a directory" -->
+            <!--unless="PLAYERGLOBAL_HOME.set"/>-->
 
-        <property name="playerglobal.swc" 
-            value="${env.PLAYERGLOBAL_HOME}/${playerglobal.version}/playerglobal.swc"/>
+        <!--<property name="playerglobal.swc" -->
+            <!--value="${env.PLAYERGLOBAL_HOME}/${playerglobal.version}/playerglobal.swc"/>-->
 
-        <available file="${playerglobal.swc}" 
-            type="file" 
-            property="playerglobal.swc.exists"/>
-        
-        <fail message="The file ${playerglobal.swc} does not exist" 
-            unless="playerglobal.swc.exists"/>
-            
-        <echo message="playerglobal.swc is ${playerglobal.swc}"/>
+        <!--<available file="${playerglobal.swc}" -->
+            <!--type="file" -->
+            <!--property="playerglobal.swc.exists"/>-->
+        <!---->
+        <!--<fail message="The file ${playerglobal.swc} does not exist" -->
+            <!--unless="playerglobal.swc.exists"/>-->
+            <!---->
+        <!--<echo message="playerglobal.swc is ${playerglobal.swc}"/>-->
     </target>
     
-    <target name="thirdparty-downloads" unless="no.thirdparty-downloads" description="Downloads all the required thirdparty code.">
-        <ant antfile="${basedir}/downloads.xml" dir="${basedir}"/>
-    </target>
+    <!--<target name="thirdparty-downloads" unless="no.thirdparty-downloads" description="Downloads all the required thirdparty code.">-->
+        <!--<ant antfile="${basedir}/downloads.xml" dir="${basedir}"/>-->
+    <!--</target>-->
     
-    <target name="main" depends="check-env,clean,thirdparty-downloads,sdk,webtier,common,core,proxy,remoting,opt,apps,createMMSFile" description="full build">
+    <target name="main" depends="check-env,clean,sdk,webtier,common,core,proxy,remoting,opt,apps,createMMSFile" description="full build">
         <tstamp>
             <format property="build.datetime" pattern="MM/dd/yyyy hh:mm:ss aa" />
         </tstamp>

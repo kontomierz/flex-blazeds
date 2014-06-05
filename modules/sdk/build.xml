@@ -95,7 +95,7 @@
         </copy>
 
         <!-- Copy playerglobal.swc from framework\libs\players to framework\libs directory -->
-        <copy file="${playerglobal.swc}" todir="${basedir}/frameworks/libs"/>
+        <!--<copy file="${playerglobal.swc}" todir="${basedir}/frameworks/libs"/>-->
 
         <!-- If using SDK3 copy dmv swcs for SDK 3 to frameworks\libs directory -->
 
