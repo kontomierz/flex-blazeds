@@ -27,6 +27,7 @@ gen
 local.properties
 
 #Apache Flex Projects
+lib/
 libs/
 in/
 swfobject/
