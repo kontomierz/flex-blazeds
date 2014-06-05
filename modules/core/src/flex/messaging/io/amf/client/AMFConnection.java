@@ -499,8 +499,15 @@ public class AMFConnection
                 requestMessage.addHeader(header);
         }
 
-        MessageBody amfMessage = new MessageBody(command, responseURI, arguments);
-        requestMessage.addBody(amfMessage);
+        if (arguments.length > 1) {
+          for (Object arg : arguments) {
+            MessageBody amfMessage = new MessageBody(command, responseURI, new Object[]{ arg });
+            requestMessage.addBody(amfMessage);
+          }
+        } else {
+          MessageBody amfMessage = new MessageBody(command, responseURI, arguments);
+          requestMessage.addBody(amfMessage);
+        }
 
         // Setup for AMF message serializer
         actionContext.setRequestMessage(requestMessage);
@@ -650,8 +657,64 @@ public class AMFConnection
      *
      * @throws IOException If an exception is encountered during URL connection setup.
      */
-    protected void internalConnect() throws IOException
-    {
+    protected void internalConnect() throws IOException {
+        if( urlObject.toString().startsWith( "https" ) )
+        {
+          // Create a trust manager that does not validate certificate chains like the default TrustManager
+          TrustManager[] trustAllCerts = new TrustManager[]
+              {
+                  new X509TrustManager()
+                  {
+                    public java.security.cert.X509Certificate[] getAcceptedIssuers()
+                    {
+                      return null;
+                    }
+
+                    public void checkClientTrusted( java.security.cert.X509Certificate[] certs, String authType )
+                    {
+                    }
+
+                    public void checkServerTrusted( java.security.cert.X509Certificate[] certs, String authType )
+                    {
+                    }
+                  }
+              };
+
+          try
+          {
+            SSLContext sc = SSLContext.getInstance( "SSL" );
+            sc.init( null, trustAllCerts, new java.security.SecureRandom() );
+
+            SSLSocketFactory factory = sc.getSocketFactory();
+
+            if( proxy==null )
+            {
+              urlConnection = (HttpsURLConnection)urlObject.openConnection();
+            }
+            else
+            {
+              urlConnection = (HttpsURLConnection)urlObject.openConnection( proxy );
+            }
+            ( ( HttpsURLConnection )urlConnection ).setDefaultSSLSocketFactory( factory );
+          }
+          catch( Exception e )
+          {
+            System.out.println("Exception: " + e.getMessage());
+          }
+        }
+        else
+        {
+          if( proxy==null )
+          {
+            urlConnection = (HttpURLConnection)urlObject.openConnection();
+          }
+          else
+          {
+            urlConnection = (HttpURLConnection)urlObject.openConnection(proxy);
+          }
+        }
+
+
         if (proxy == null)
             urlConnection = (HttpURLConnection)urlObject.openConnection();
         else
@@ -720,8 +783,8 @@ public class AMFConnection
             List<String> headerValues = element.getValue();
             for (String headerValue : headerValues)
             {
-                if (SET_COOKIE.equals(headerName) || COOKIE.equals(headerName)
-                        || SET_COOKIE2.equals(headerName) || COOKIE2.equals(headerName))
+                if (SET_COOKIE.equalsIgnoreCase(headerName) || COOKIE.equalsIgnoreCase(headerName)
+                    || SET_COOKIE2.equalsIgnoreCase(headerName) || COOKIE2.equalsIgnoreCase(headerName))
                     processSetCookieHeader(headerValue);
             }
         }
@@ -757,13 +820,14 @@ public class AMFConnection
      */
     protected Object processAmfBody(ArrayList<MessageBody> messages) throws ServerStatusException
     {
+        List<Object> datas = new ArrayList<Object>();
         for (MessageBody message : messages)
         {
             String targetURI = message.getTargetURI();
 
             if (targetURI.endsWith(MessageIOConstants.RESULT_METHOD))
             {
-                return message.getData();
+                datas.add(message.getData());
             }
             else if (targetURI.endsWith(MessageIOConstants.STATUS_METHOD))
             {
@@ -773,7 +837,10 @@ public class AMFConnection
                 throw exception;
             }
         }
-        return null; // Should not happen.
+        if (datas.size() > 1)
+          return datas;
+        else
+          return datas.get(0);
     }
 
     /**
@@ -809,6 +876,7 @@ public class AMFConnection
         cookies.put(name, value);
     }
 
+
     /**
      * Sets the Http request headers, including the cookie headers.
      */
@@ -827,6 +895,7 @@ public class AMFConnection
         // Always set valid Content-Type header (overrides any user-defined Content-Type).
         urlConnection.setRequestProperty(HTTP_HEADER_NAME_CONTENT_TYPE, flex.messaging.io.MessageIOConstants.AMF_CONTENT_TYPE);
     }
+
 
     /**
      * Sets the Http request cookie headers.
@@ -849,6 +918,11 @@ public class AMFConnection
         }
         if (cookieHeaderValue != null)
             urlConnection.setRequestProperty(COOKIE, cookieHeaderValue.toString());
+    }
+
+    public Map<String, String> getCookies()
+    {
+      return this.cookies;
     }
 
     //--------------------------------------------------------------------------
