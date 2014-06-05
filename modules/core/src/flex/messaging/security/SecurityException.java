@@ -55,11 +55,11 @@ public class SecurityException extends MessageException
     {
         super();
     }
-    
+
     /**
      * Create a SecurityException that will use the specified ResourceLoader
      * for error codes.
-     * 
+     *
      * @exclude
      */
     public SecurityException(ResourceLoader resourceLoader)
