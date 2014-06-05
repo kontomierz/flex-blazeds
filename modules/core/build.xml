@@ -97,6 +97,7 @@
             <include name="flex/management/**"/>
             <include name="flex/messaging/**"/>
             <include name="flex/core/**"/>
+            <include name="flex/data/**"/>
             <exclude name=".dependency-info/**"/>
             <manifest>
         		<attribute name="Sealed" value="${manifest.sealed}"/>
