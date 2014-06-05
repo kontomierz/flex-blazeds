@@ -169,6 +169,7 @@ modules/core/src/ExcludeDoclet.java
 qa/resources/config/air-config.xml
 qa/resources/config/flex-config.xml
 resources/security/tomcat/TomcatValve.java
+resources/flex_sdk
 servers/apache-tomcat-6.0.29/
 templates/
 apps/team/WEB-INF/flex/air-config.xml
