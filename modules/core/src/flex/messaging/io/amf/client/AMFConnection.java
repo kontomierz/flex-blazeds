@@ -31,11 +31,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocket;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 
 import flex.messaging.MessageException;
 import flex.messaging.io.amf.ActionContext;
@@ -667,33 +662,8 @@ public class AMFConnection
     protected void internalConnect() throws IOException {
         if( urlObject.toString().startsWith( "https" ) )
         {
-          // Create a trust manager that does not validate certificate chains like the default TrustManager
-          TrustManager[] trustAllCerts = new TrustManager[]
-              {
-                  new X509TrustManager()
-                  {
-                    public java.security.cert.X509Certificate[] getAcceptedIssuers()
-                    {
-                      return null;
-                    }
-
-                    public void checkClientTrusted( java.security.cert.X509Certificate[] certs, String authType )
-                    {
-                    }
-
-                    public void checkServerTrusted( java.security.cert.X509Certificate[] certs, String authType )
-                    {
-                    }
-                  }
-              };
-
           try
           {
-            SSLContext sc = SSLContext.getInstance( "SSL" );
-            sc.init( null, trustAllCerts, new java.security.SecureRandom() );
-
-            SSLSocketFactory factory = sc.getSocketFactory();
-
             if( proxy==null )
             {
               urlConnection = (HttpsURLConnection)urlObject.openConnection();
@@ -702,7 +672,6 @@ public class AMFConnection
             {
               urlConnection = (HttpsURLConnection)urlObject.openConnection( proxy );
             }
-            ( ( HttpsURLConnection )urlConnection ).setDefaultSSLSocketFactory( factory );
           }
           catch( Exception e )
           {
