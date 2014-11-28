@@ -20,9 +20,9 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.System;
 import java.net.HttpURLConnection;
 import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLSocketFactory;
 import java.net.Proxy;
 import java.net.URI;
 import java.net.URL;
@@ -126,7 +126,7 @@ public class AMFConnection
     private SerializationContext serializationContext;
     private String url;
     private URL urlObject;
-
+    private SSLSocketFactory socketFactory = null;
     //--------------------------------------------------------------------------
     //
     // Protected Variables
@@ -343,6 +343,36 @@ public class AMFConnection
     public void setProxy(Proxy proxy)
     {
         this.proxy = proxy;
+    }
+
+    //----------------------------------
+    //  url
+    //----------------------------------
+
+    //----------------------------------
+    //  ssl socket factory
+    //----------------------------------
+
+    /**
+     * Returns the <tt>SSL Socket Factory</tt> this AMF connection is using;
+     * <code>null</code> by default.
+     *
+     * @return The <tt>SSL Socket Factory</tt> this AMF connection is using.
+     */
+    public SSLSocketFactory getSSLSocketFactory()
+    {
+        return socketFactory;
+    }
+
+    /**
+     * Sets the <tt>SSL Socket Factory</tt> that this AMF connection will use.
+     * Set to <code>null</code> to use default ssl socket factory
+     *
+     * @param socketFactory The <tt>SSL Socket Factory</tt> this AMF connection will use.
+     */
+    public void setSSLSocketFactory(SSLSocketFactory socketFactory)
+    {
+        this.socketFactory = socketFactory;
     }
 
     //----------------------------------
@@ -660,42 +690,12 @@ public class AMFConnection
      * @throws IOException If an exception is encountered during URL connection setup.
      */
     protected void internalConnect() throws IOException {
-        if( urlObject.toString().startsWith( "https" ) )
-        {
-          try
-          {
-            if( proxy==null )
-            {
-              urlConnection = (HttpsURLConnection)urlObject.openConnection();
-            }
-            else
-            {
-              urlConnection = (HttpsURLConnection)urlObject.openConnection( proxy );
-            }
-          }
-          catch( Exception e )
-          {
-            System.out.println("Exception: " + e.getMessage());
-          }
-        }
-        else
-        {
-          if( proxy==null )
-          {
-            urlConnection = (HttpURLConnection)urlObject.openConnection();
-          }
-          else
-          {
-            urlConnection = (HttpURLConnection)urlObject.openConnection(proxy);
-          }
-        }
-
-
         if (proxy == null)
             urlConnection = (HttpURLConnection)urlObject.openConnection();
         else
             urlConnection = (HttpURLConnection)urlObject.openConnection(proxy);
-
+        if (socketFactory != null && urlConnection instanceof HttpsURLConnection)
+            ((HttpsURLConnection) urlConnection).setSSLSocketFactory(socketFactory);
         urlConnection.setDoOutput(true);
         setHttpRequestHeaders();
         serializationContext.instantiateTypes = instantiateTypes;
