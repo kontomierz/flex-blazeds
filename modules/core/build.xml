@@ -23,12 +23,16 @@
     <property file="${basedir}/build.properties"/>
     <property name="lib.dir" value="${basedir}/lib"/>
 
+    <tstamp>
+        <format property="TIMESTAMP" pattern="yyyy_MM_dd__HH_mm_ss" />
+    </tstamp>
+
     <property name="module.dir" value="${basedir}/modules/core"/>
     <property name="module.lib.dir" location="${module.dir}/lib"/>
     <property name="tomcat.lib.dir" location="${basedir}/servers/apache-tomcat-6.0.29/lib" />
     <property name="module.src" value="${module.dir}/src"/>
     <property name="module.classes" value="${module.dir}/classes"/>
-    <property name="module.jar" value="${lib.dir}/flex-messaging-core.jar"/>
+    <property name="module.jar" value="${lib.dir}/flex-messaging-core-${TIMESTAMP}.jar"/>
     <property name="module.dist.dir" value="${basedir}/dist/source"/>
 
     <property name="common.src" value="${basedir}/modules/common/src"/>
