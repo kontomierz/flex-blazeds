@@ -12,6 +12,9 @@
 *.ipr
 *.iws
 
+# jenv
+.java-version
+
 # building
 target
 [Bb]uild/
